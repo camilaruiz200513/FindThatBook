@@ -3,7 +3,9 @@ using System.Threading.RateLimiting;
 using FindThatBook.Api.Middleware;
 using FindThatBook.Core;
 using FindThatBook.Infrastructure;
+using FindThatBook.Infrastructure.Configuration;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +91,21 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime
     .WithName("Health");
 
 app.MapControllers().RequireRateLimiting(PublicRateLimitPolicy);
+
+// Announce LLM provider status at startup so a missing key surfaces before the
+// first request instead of silently degrading to the heuristic fallback.
+var geminiOptions = app.Services.GetRequiredService<IOptions<GeminiOptions>>().Value;
+var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("FindThatBook.Startup");
+if (string.IsNullOrWhiteSpace(geminiOptions.ApiKey))
+{
+    startupLogger.LogWarning(
+        "Gemini API key not configured; using heuristic extractor fallback. See README § Configuration.");
+}
+else
+{
+    startupLogger.LogInformation(
+        "Gemini LLM provider ready (model={Model}).", geminiOptions.Model);
+}
 
 app.Run();
 

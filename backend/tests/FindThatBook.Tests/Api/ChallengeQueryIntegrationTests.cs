@@ -150,6 +150,45 @@ public class ChallengeQueryIntegrationTests : IClassFixture<WebApplicationFactor
     }
 
     [Fact]
+    public async Task dickens_tale_two_cities_sparse_query_resolves_to_Dickens_primary_author_Exact_tier()
+    {
+        // Sparse-query archetype: the PDF uses "dickens, tale two cities" as a pair of
+        // sparse fragments (just the author OR just the title) stitched with a comma.
+        // The LLM is expected to re-assemble them into a full hypothesis, and the
+        // matcher should surface the canonical 1859 work at Exact tier because both
+        // title and primary author align.
+        var hypothesis = new ExtractedBookInfo(
+            "A Tale of Two Cities",
+            "Charles Dickens",
+            null,
+            Array.Empty<string>());
+
+        var books = new[]
+        {
+            BookFactory.Create(
+                title: "A Tale of Two Cities",
+                workId: "/works/OL1017167W",
+                primary: new[] { "Charles Dickens" },
+                year: 1859),
+            BookFactory.Create(
+                title: "A Tale of Two Cities (Penguin Classics)",
+                workId: "/works/OL99998W",
+                primary: new[] { "Charles Dickens" },
+                contributors: new[] { "Richard Maxwell" },
+                year: 2003),
+        };
+
+        var result = await PostAsync(BuildClient(hypothesis, books), "dickens, tale two cities");
+
+        result.Hypothesis.Author.Should().Be("Charles Dickens");
+        result.Hypothesis.Title.Should().Be("A Tale of Two Cities");
+        result.Candidates.Should().NotBeEmpty();
+        result.Candidates[0].Tier.Should().Be(MatchTier.Exact);
+        result.Candidates[0].Book.PrimaryAuthors.Should().Contain("Charles Dickens");
+        result.Candidates[0].Explanation.Should().Contain("primary author");
+    }
+
+    [Fact]
     public async Task austen_bennet_falls_back_to_AuthorOnly_when_bennet_is_a_character_not_the_author()
     {
         // "Bennet" is a character (Elizabeth Bennet) in Pride and Prejudice, not an

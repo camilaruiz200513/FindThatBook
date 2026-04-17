@@ -186,6 +186,8 @@ public sealed partial class GeminiLlmService : ILlmService
             {
                 Temperature = _options.Temperature,
                 MaxOutputTokens = _options.MaxOutputTokens,
+                TopP = _options.TopP,
+                Seed = _options.Seed,
                 ResponseSchema = ExtractionSchema,
             },
         };
@@ -225,6 +227,8 @@ public sealed partial class GeminiLlmService : ILlmService
             {
                 Temperature = 0.0,
                 MaxOutputTokens = _options.MaxOutputTokens,
+                TopP = _options.TopP,
+                Seed = _options.Seed,
                 ResponseSchema = RerankSchema,
             },
         };

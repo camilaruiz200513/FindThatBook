@@ -12,4 +12,16 @@ public sealed class GeminiOptions
     // Gemini 2.5 counts internal "thinking" tokens toward this budget, so 512
     // leaves ~200 tokens of real output headroom after reasoning.
     public int MaxOutputTokens { get; init; } = 512;
+
+    /// <summary>
+    /// Nucleus-sampling cutoff. Supported by Gemini 2.5 via <c>generationConfig.topP</c>.
+    /// Leave null to defer to the model's default; set to narrow the sampling tail.
+    /// </summary>
+    public double? TopP { get; init; } = 0.95;
+
+    /// <summary>
+    /// Fixed sampling seed. Supported by Gemini 2.5 via <c>generationConfig.seed</c> for
+    /// reproducibility across runs and reviewer demos. Leave null to let the server pick one.
+    /// </summary>
+    public int? Seed { get; init; } = 42;
 }

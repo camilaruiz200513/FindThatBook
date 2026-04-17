@@ -31,6 +31,22 @@ internal sealed class GeminiGenerationConfig
     [JsonPropertyName("maxOutputTokens")]
     public int MaxOutputTokens { get; set; }
 
+    /// <summary>
+    /// Nucleus-sampling probability cutoff. Supported by Gemini 2.5 via generationConfig.
+    /// Nullable so it is omitted from the payload when not configured.
+    /// </summary>
+    [JsonPropertyName("topP")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? TopP { get; set; }
+
+    /// <summary>
+    /// Fixed RNG seed. Supported by Gemini 2.5 via generationConfig for reproducibility.
+    /// Nullable so it is omitted from the payload when not configured.
+    /// </summary>
+    [JsonPropertyName("seed")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Seed { get; set; }
+
     [JsonPropertyName("responseMimeType")]
     public string ResponseMimeType { get; set; } = "application/json";
 
