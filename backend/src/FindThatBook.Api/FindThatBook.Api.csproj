@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SpaRoot>..\..\..\frontend\</SpaRoot>
+    <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <UserSecretsId>4c082a27-1b91-44d5-b078-052c9ea4d13c</UserSecretsId>
+  </PropertyGroup>
+
+  <Target Name="EnsureSpaDependencies" BeforeTargets="Build" Condition="'$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules')">
+    <Message Importance="high" Text="Installing frontend dependencies (npm install)..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FindThatBook.Core\FindThatBook.Core.csproj" />
+    <ProjectReference Include="..\FindThatBook.Infrastructure\FindThatBook.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
